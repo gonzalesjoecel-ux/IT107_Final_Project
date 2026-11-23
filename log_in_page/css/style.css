@@ -1,0 +1,183 @@
+/* ---------- Base setup ---------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0b1420;
+  font-family: 'Courier New', Consolas, monospace;
+  color: #d6e4ec;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Faint grid pattern in the background, like a "terminal" feel */
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(45, 212, 191, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(45, 212, 191, 0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+/* ---------- Card ---------- */
+.login-card {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  background: #101c2c;
+  border: 1px solid #1f3a4a;
+  border-radius: 10px;
+  padding: 36px 32px;
+  box-shadow: 0 0 40px rgba(45, 212, 191, 0.08);
+  z-index: 1;
+}
+
+.brand {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.lock-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.brand h1 {
+  font-size: 22px;
+  letter-spacing: 3px;
+  color: #d6e4ec;
+}
+
+.brand h1 span {
+  color: #2dd4bf; /* accent teal, reads as "secure/active" */
+}
+
+.subtitle {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #6f8a99;
+  letter-spacing: 1px;
+}
+
+/* ---------- Form fields ---------- */
+.field {
+  margin-bottom: 18px;
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #6f8a99;
+  margin-bottom: 6px;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px 14px;
+  background: #0b1420;
+  border: 1px solid #1f3a4a;
+  border-radius: 6px;
+  color: #e8f1f5;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border-color: #2dd4bf;
+  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.15);
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  padding-right: 42px;
+}
+
+.toggle-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  color: #6f8a99;
+  padding: 4px;
+}
+
+.toggle-btn:hover {
+  color: #2dd4bf;
+}
+
+/* ---------- Error message ---------- */
+.error-msg {
+  min-height: 18px;
+  font-size: 12px;
+  color: #ff6b6b;
+  margin-bottom: 10px;
+}
+
+/* ---------- Button ---------- */
+.login-btn {
+  width: 100%;
+  padding: 13px;
+  background: #2dd4bf;
+  color: #0b1420;
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  font-weight: bold;
+  font-size: 14px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.login-btn:hover {
+  background: #5eead4;
+}
+
+.login-btn:active {
+  transform: scale(0.98);
+}
+
+/* ---------- Hint text ---------- */
+.hint {
+  margin-top: 16px;
+  font-size: 11px;
+  text-align: center;
+  color: #45606e;
+}
+
+.hint code {
+  color: #6f8a99;
+}
+
+/* Shake animation used when login fails */
+.shake {
+  animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}

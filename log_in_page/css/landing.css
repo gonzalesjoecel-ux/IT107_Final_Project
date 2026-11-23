@@ -1,0 +1,56 @@
+/* ==========================================================================
+   landing.css — page-specific layout for index.html only
+   Independent module: safe to redesign without touching login/signup pages.
+   ========================================================================== */
+
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  min-height: 100vh;
+}
+
+.split__info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 56px;
+}
+
+.split__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 320px;
+  margin: 48px 0;
+}
+
+.split__blurb {
+  max-width: 460px;
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+
+.split__footer {
+  color: var(--text-faint);
+  font-size: 0.8rem;
+}
+
+.split__hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+@media (max-width: 860px) {
+  .split {
+    grid-template-columns: 1fr;
+  }
+  .split__hero {
+    min-height: 320px;
+    order: -1;
+  }
+  .split__info {
+    padding: 32px;
+  }
+}

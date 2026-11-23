@@ -1,0 +1,75 @@
+/* ==========================================================================
+   login.css — page-specific layout for login.html only
+   Independent module: safe to redesign without touching landing/signup pages.
+   ========================================================================== */
+
+.auth-split {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  min-height: 100vh;
+}
+
+.auth-split__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 40px;
+}
+
+.auth-split__form-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 56px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: var(--container-form);
+  margin: 0 auto;
+}
+
+.auth-card__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.auth-card__title {
+  font-size: 1.7rem;
+}
+
+.auth-card__switch {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.auth-card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.auth-card__fineprint {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-faint);
+}
+
+@media (max-width: 860px) {
+  .auth-split {
+    grid-template-columns: 1fr;
+  }
+  .auth-split__hero {
+    min-height: 260px;
+    padding: 28px;
+  }
+  .auth-split__form-area {
+    padding: 32px 24px 56px;
+  }
+}

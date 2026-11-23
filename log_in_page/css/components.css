@@ -1,0 +1,274 @@
+/* ==========================================================================
+   components.css — buttons, form fields, warnings, wordmark, hero panel
+   Independent module: reused by landing.css, login.css, signup.css.
+   Changing a component here updates it everywhere consistently.
+   ========================================================================== */
+
+/* ---------- wordmark ---------- */
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.wordmark__spark {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}
+
+/* ---------- hero visual panel (circuit / lock motif, pure CSS+SVG) ---------- */
+.hero-panel {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(139, 92, 246, 0.25), transparent 45%),
+    radial-gradient(circle at 75% 70%, rgba(236, 72, 153, 0.2), transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(53, 224, 201, 0.12), transparent 60%),
+    var(--bg-panel);
+}
+
+.hero-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--line-dim) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line-dim) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.35;
+  mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 80%);
+}
+
+.hero-panel__lock {
+  position: relative;
+  width: min(280px, 60%);
+  filter: drop-shadow(0 0 30px rgba(53, 224, 201, 0.35));
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+.hero-panel__tagline {
+  position: relative;
+  max-width: 380px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+/* ---------- buttons ---------- */
+.btn {
+  --btn-bg: var(--bg-panel-raised);
+  --btn-fg: var(--text-primary);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 14px 28px;
+  border: 1px solid var(--line-dim);
+  border-radius: var(--radius-md);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 180ms var(--ease-snap),
+              box-shadow 220ms var(--ease-smooth),
+              border-color 220ms var(--ease-smooth),
+              background 220ms var(--ease-smooth);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-teal);
+  box-shadow: 0 8px 24px -8px rgba(53, 224, 201, 0.35);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.98);
+  transition-duration: 80ms;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn--primary {
+  --btn-bg: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+  background: var(--btn-bg);
+  border-color: transparent;
+}
+
+.btn--primary:hover {
+  box-shadow: 0 10px 28px -8px rgba(139, 92, 246, 0.55);
+}
+
+.btn--ghost {
+  --btn-bg: transparent;
+  border-color: var(--line-dim);
+}
+
+.btn--ghost:hover {
+  background: rgba(53, 224, 201, 0.06);
+}
+
+/* ripple element injected by buttons.js on click */
+.btn__ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(0);
+  pointer-events: none;
+  animation: ripple 550ms var(--ease-smooth) forwards;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+/* success pulse, applied briefly by JS on successful submit */
+.btn--success-pulse {
+  animation: success-pulse 480ms var(--ease-smooth);
+}
+
+@keyframes success-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(53, 224, 201, 0.55); }
+  100% { box-shadow: 0 0 0 16px rgba(53, 224, 201, 0); }
+}
+
+/* shake, applied by JS when a submit is blocked by validation */
+.shake {
+  animation: shake 400ms var(--ease-smooth);
+}
+
+@keyframes shake {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(4px); }
+  30%, 50%, 70% { transform: translateX(-8px); }
+  40%, 60% { transform: translateX(8px); }
+}
+
+/* ---------- form fields ---------- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.field__label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.field__required {
+  color: var(--accent-pink);
+  margin-left: 2px;
+}
+
+.field__input {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--bg-void);
+  border: 1px solid var(--line-dim);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  transition: border-color 180ms var(--ease-smooth),
+              box-shadow 180ms var(--ease-smooth);
+}
+
+.field__input::placeholder {
+  color: var(--text-faint);
+}
+
+.field__input:hover {
+  border-color: var(--text-faint);
+}
+
+.field__input:focus {
+  border-color: var(--accent-teal);
+  box-shadow: 0 0 0 3px rgba(53, 224, 201, 0.15);
+}
+
+.field__input[aria-invalid="true"] {
+  border-color: var(--state-error);
+  box-shadow: 0 0 0 3px var(--state-error-bg);
+}
+
+.field__warning {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--state-error);
+}
+
+.field__warning::before {
+  content: "!";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--state-error);
+  color: var(--bg-void);
+  font-size: 0.7rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.field--invalid .field__warning {
+  display: flex;
+}
+
+/* form-level banner for a submit blocked by multiple empty fields */
+.form-banner {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--state-error);
+  background: var(--state-error-bg);
+  color: var(--state-error);
+  font-size: 0.85rem;
+}
+
+.form-banner.is-visible {
+  display: flex;
+  animation: banner-in 220ms var(--ease-smooth);
+}
+
+@keyframes banner-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.form-banner.is-success {
+  border-color: var(--state-success);
+  background: rgba(53, 224, 201, 0.1);
+  color: var(--state-success);
+}

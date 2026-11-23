@@ -1,0 +1,91 @@
+/* ==========================================================================
+   base.css — design tokens, reset, typography
+   Independent module: editing colors/type here affects the whole system
+   in a controlled way, but nothing else depends on this file's internals.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Bitter:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* --- color: dark circuitboard base + three signal accents --- */
+  --bg-void:        #070a14;
+  --bg-panel:       #0d1224;
+  --bg-panel-raised:#131a33;
+  --line-dim:       #232b4a;
+
+  --accent-teal:    #35e0c9;
+  --accent-purple:  #8b5cf6;
+  --accent-pink:    #ec4899;
+
+  --text-primary:   #eef1fb;
+  --text-secondary: #98a2c3;
+  --text-faint:     #5c6690;
+
+  --state-error:    #ff6b6b;
+  --state-error-bg: rgba(255, 107, 107, 0.1);
+  --state-success:  #35e0c9;
+
+  /* --- type --- */
+  --font-display: 'Bitter', Georgia, serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* --- layout --- */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --container-form: 420px;
+
+  /* --- motion --- */
+  --ease-snap: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-void);
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+a {
+  color: var(--accent-teal);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+p {
+  color: var(--text-secondary);
+}
+
+/* visible keyboard focus everywhere, no exceptions */
+:focus-visible {
+  outline: 2px solid var(--accent-teal);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
