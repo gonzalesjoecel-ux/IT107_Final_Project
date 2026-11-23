@@ -9,7 +9,8 @@
  *
  *   13.1  admin only  ........ the check right after the helper functions
  *   13.2  what it shows ...... 1 summary cards   2 failed log-ins per hour (Chart.js)
- *                              3 top IP addresses   4 flags   5 recent events + filters
+ *                              3 top IP addresses   4 IP blocks   5 flags
+ *                              6 recent events + filters
  *   13.3  auto-refresh ....... js/admin_dashboard.js fetches   admin_dashboard.php?data=1   (JSON)
  *                              The JSON mode checks for an admin too.
  *
@@ -18,7 +19,7 @@
  *   and written with textContent (never innerHTML) in JavaScript.
  */
 require __DIR__ . '/includes/auth.php';
-require __DIR__ . '/includes/activity.php';
+require_once __DIR__ . '/includes/activity.php';
 require __DIR__ . '/includes/layout.php';
 
 /* ------------------------------------------------------------------
@@ -125,6 +126,7 @@ function dashboard_payload(PDO $pdo, array $f): array {
                        'otp_sent' => 0, 'otp_failed' => 0, 'alerts' => 0],
         'hourly'   => ['labels' => [], 'values' => []],
         'top_ips'  => [],
+        'blocks'   => [],
         'flags'    => [],
         'events'   => [],
         'warnings' => [],
@@ -160,6 +162,41 @@ function dashboard_payload(PDO $pdo, array $f): array {
         }
     } catch (Throwable $ex) {
         error_log('dashboard blocks: ' . $ex->getMessage());
+    }
+
+    /* ---- IP blocks (read-only list, newest first) ---- */
+    try {
+        if (table_exists($pdo, T_BLOCKS)) {
+            $cols = [];
+            $q = $pdo->prepare('SELECT column_name FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = ?');
+            $q->execute([T_BLOCKS]);
+            foreach ($q->fetchAll(PDO::FETCH_COLUMN) as $c) { $cols[strtolower((string)$c)] = true; }
+
+            $reason = isset($cols['reason']) ? 'reason' : "''";
+            $fails  = isset($cols['failed_attempts']) ? 'failed_attempts' : '0';
+            $at     = isset($cols['blocked_at']) ? 'blocked_at' : 'NULL';
+
+            $q = $pdo->query(
+                'SELECT ' . BLOCK_IP_COL . ' AS ip, ' . $reason . ' AS reason, '
+              . $fails . ' AS failures, ' . $at . ' AS blocked_at, ' . BLOCK_UNTIL_COL . ' AS until
+               FROM ' . T_BLOCKS . ' ORDER BY ' . BLOCK_UNTIL_COL . ' DESC LIMIT 10'
+            );
+            foreach ($q->fetchAll(PDO::FETCH_ASSOC) as $r) {
+                $until = strtotime((string)$r['until']);
+                $active = $until !== false && $until > time();
+                $out['blocks'][] = [
+                    'ip'         => (string)$r['ip'],
+                    'reason'     => (string)($r['reason'] ?? ''),
+                    'failures'   => (int)$r['failures'],
+                    'blocked_at' => (string)($r['blocked_at'] ?? ''),
+                    'until'      => (string)$r['until'],
+                    'status'     => $active ? 'ACTIVE' : 'EXPIRED',
+                ];
+            }
+        }
+    } catch (Throwable $ex) {
+        error_log('dashboard block list: ' . $ex->getMessage());
+        $warnings[] = 'The IP block list could not be loaded.';
     }
 
     /* ---- 2. Failed log-ins per hour, last 24 hours ---- */
@@ -205,12 +242,14 @@ function dashboard_payload(PDO $pdo, array $f): array {
         if (table_exists($pdo, T_FLAGS)) {
             $q = $pdo->query('SELECT * FROM ' . T_FLAGS . ' ORDER BY id DESC LIMIT 10');
             foreach ($q->fetchAll(PDO::FETCH_ASSOC) as $r) {
+                $status = strtoupper((string)($r['status'] ?? 'OPEN'));
                 $out['flags'][] = [
-                    'title'    => (string)($r['pattern'] ?? $r['flag_type'] ?? $r['type'] ?? 'Flag'),
-                    'target'   => (string)($r['target'] ?? ''),
+                    'title'    => (string)($r['pattern_type'] ?? $r['pattern'] ?? $r['flag_type'] ?? $r['type'] ?? 'Flag'),
+                    'target'   => (string)($r['target_value'] ?? $r['target'] ?? ''),
                     'details'  => (string)($r['details'] ?? $r['detail'] ?? ''),
-                    'severity' => strtoupper((string)($r['severity'] ?? 'MED')),
-                    'date'     => (string)($r['flag_date'] ?? $r['created_at'] ?? ''),
+                    'severity' => $status === 'OPEN' ? 'HIGH' : 'MED',
+                    'status'   => $status,
+                    'date'     => (string)($r['detected_at'] ?? $r['flag_date'] ?? $r['created_at'] ?? ''),
                 ];
             }
         } else {
@@ -430,10 +469,36 @@ render_header('Security monitoring', 'a-overview');
       </div>
     </section>
 
-    <!-- 4. Flags from the monitoring script -->
+    <!-- 4. IP blocks -->
+    <section class="dash-card dash-card--wide" aria-labelledby="blocks-title">
+      <h2 id="blocks-title">Blocked IP addresses</h2>
+      <p class="dash-sub">Read-only. Addresses are blocked for 10 minutes after repeated failures. Documentation-range sample IPs are used for testing.</p>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th>IP address</th><th>Reason</th><th>Failures</th><th>Blocked at</th><th>Expires at</th><th>Status</th></tr></thead>
+          <tbody id="ip-blocks">
+            <?php if (!$p['blocks']): ?>
+              <tr><td colspan="6" class="muted">No IP blocks recorded.</td></tr>
+            <?php endif; ?>
+            <?php foreach ($p['blocks'] as $b): ?>
+              <tr>
+                <td class="mono"><?= e($b['ip']) ?></td>
+                <td><?= e($b['reason']) ?></td>
+                <td><?= (int)$b['failures'] ?></td>
+                <td class="nowrap"><?= e($b['blocked_at']) ?></td>
+                <td class="nowrap"><?= e($b['until']) ?></td>
+                <td><span class="pill pill--<?= $b['status'] === 'ACTIVE' ? 'warn' : 'muted' ?>"><?= e($b['status']) ?></span></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 5. Flags from the monitoring script -->
     <section class="dash-card dash-card--wide" aria-labelledby="flags-title">
-      <h2 id="flags-title">Flags from the monitoring script</h2>
-      <p class="dash-sub">Written by <code>php scripts/monitor.php</code>. Newest first.</p>
+      <h2 id="flags-title">Security flags</h2>
+      <p class="dash-sub">Patterns detected in the activity log. Newest first.</p>
       <ul class="feed" id="flags">
         <?php if (!$p['flags']): ?>
           <li class="muted">No flags yet. Run the monitoring script to scan the log.</li>
@@ -443,14 +508,14 @@ render_header('Security monitoring', 'a-overview');
             <span class="dot dot--<?= $r['severity'] === 'HIGH' ? 'bad' : 'warn' ?>"></span>
             <div>
               <div class="feed__text"><strong><?= e($r['title']) ?></strong> — <span class="mono"><?= e($r['target']) ?></span></div>
-              <div class="feed__meta"><?= e($r['details']) ?> · <?= e($r['severity']) ?> · <?= e($r['date']) ?></div>
+              <div class="feed__meta"><?= e($r['details']) ?> · <?= e($r['status']) ?> · <?= e($r['date']) ?></div>
             </div>
           </li>
         <?php endforeach; ?>
       </ul>
     </section>
 
-    <!-- 5. Recent events with filters -->
+    <!-- 6. Recent events with filters -->
     <section class="dash-card dash-card--wide" aria-labelledby="events-title">
       <h2 id="events-title">Recent events (latest 50)</h2>
 

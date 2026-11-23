@@ -5,7 +5,7 @@
     require __DIR__ . '/includes/auth.php';
     require __DIR__ . '/includes/crypto.php';
     require __DIR__ . '/includes/upload.php';
-    require __DIR__ . '/includes/activity.php';
+    require_once __DIR__ . '/includes/activity.php';
 
     const MAX_ITEMS = 100;
 

@@ -128,7 +128,25 @@
       replaceChildren(ips, rows.length ? rows : [emptyRow(3, 'No failed log-ins in the last 24 hours.')]);
     }
 
-    // 4. flags
+    // 4. IP blocks
+    var blocks = document.getElementById('ip-blocks');
+    if (blocks) {
+      var blockRows = (data.blocks || []).map(function (r) {
+        var tr = document.createElement('tr');
+        tr.appendChild(cell(r.ip, 'mono'));
+        tr.appendChild(cell(r.reason));
+        tr.appendChild(cell(String(r.failures)));
+        tr.appendChild(cell(r.blocked_at, 'nowrap'));
+        tr.appendChild(cell(r.until, 'nowrap'));
+        var td = document.createElement('td');
+        td.appendChild(pill(r.status, r.status === 'ACTIVE' ? 'warn' : 'muted'));
+        tr.appendChild(td);
+        return tr;
+      });
+      replaceChildren(blocks, blockRows.length ? blockRows : [emptyRow(6, 'No IP blocks recorded.')]);
+    }
+
+    // 5. flags
     var flags = document.getElementById('flags');
     if (flags) {
       var items = (data.flags || []).map(function (r) {
@@ -152,7 +170,7 @@
 
         var meta = document.createElement('div');
         meta.className = 'feed__meta';
-        meta.textContent = r.details + ' · ' + r.severity + ' · ' + r.date;
+        meta.textContent = r.details + ' · ' + r.status + ' · ' + r.date;
 
         box.appendChild(title);
         box.appendChild(meta);
@@ -169,7 +187,7 @@
       replaceChildren(flags, items);
     }
 
-    // 5. recent events
+    // 6. recent events
     var events = document.getElementById('events');
     if (events) {
       var evRows = (data.events || []).map(function (r) {
