@@ -371,7 +371,7 @@ render_public_header('Sign up', 'signup');
             <label for="su-first">First Name <span class="site-field__req">*</span></label>
             <input class="site-input<?= isset($errors['first_name']) ? ' site-input--invalid' : '' ?>" type="text"
                    id="su-first" name="first_name" maxlength="<?= NAME_MAX ?>" required
-                   value="<?= e($old['first_name']) ?>" autocomplete="given-name" />
+                   value="<?= e($old['first_name']) ?>" placeholder="First name" autocomplete="given-name" />
             <div class="site-field__msg" data-msg-for="first_name"><?= e($errors['first_name'] ?? '') ?></div>
           </div>
 
@@ -379,7 +379,7 @@ render_public_header('Sign up', 'signup');
             <label for="su-middle">Middle Name <span class="site-field__opt">optional</span></label>
             <input class="site-input<?= isset($errors['middle_name']) ? ' site-input--invalid' : '' ?>" type="text"
                    id="su-middle" name="middle_name" maxlength="<?= NAME_MAX ?>"
-                   value="<?= e($old['middle_name']) ?>" autocomplete="additional-name" />
+                   value="<?= e($old['middle_name']) ?>" placeholder="Middle name" autocomplete="additional-name" />
             <div class="site-field__msg" data-msg-for="middle_name"><?= e($errors['middle_name'] ?? '') ?></div>
           </div>
 
@@ -387,7 +387,7 @@ render_public_header('Sign up', 'signup');
             <label for="su-family">Family Name <span class="site-field__req">*</span></label>
             <input class="site-input<?= isset($errors['family_name']) ? ' site-input--invalid' : '' ?>" type="text"
                    id="su-family" name="family_name" maxlength="<?= NAME_MAX ?>" required
-                   value="<?= e($old['family_name']) ?>" autocomplete="family-name" />
+                   value="<?= e($old['family_name']) ?>" placeholder="Family name" autocomplete="family-name" />
             <div class="site-field__msg" data-msg-for="family_name"><?= e($errors['family_name'] ?? '') ?></div>
           </div>
 
@@ -414,7 +414,7 @@ render_public_header('Sign up', 'signup');
             <label for="su-birthdate">Birthdate <span class="site-field__req">*</span></label>
             <input class="site-input<?= isset($errors['birthdate']) ? ' site-input--invalid' : '' ?>" type="date"
                    id="su-birthdate" name="birthdate" required max="<?= date('Y-m-d') ?>"
-                   value="<?= e($old['birthdate']) ?>" autocomplete="bday" />
+                   value="<?= e($old['birthdate']) ?>" placeholder="YYYY-MM-DD" autocomplete="bday" />
             <div class="site-field__msg" data-msg-for="birthdate"><?= e($errors['birthdate'] ?? '') ?></div>
           </div>
 
@@ -463,7 +463,7 @@ render_public_header('Sign up', 'signup');
             <label for="su-barangay">Barangay <span class="site-field__req">*</span></label>
             <input class="site-input<?= isset($errors['barangay']) ? ' site-input--invalid' : '' ?>" type="text"
                    id="su-barangay" name="barangay" maxlength="50" required
-                   value="<?= e($old['barangay']) ?>" autocomplete="address-level3" />
+                   value="<?= e($old['barangay']) ?>" placeholder="e.g. Barangay 1" autocomplete="address-level3" />
             <div class="site-field__msg" data-msg-for="barangay"><?= e($errors['barangay'] ?? '') ?></div>
           </div>
 
@@ -471,7 +471,7 @@ render_public_header('Sign up', 'signup');
             <label for="su-city">Municipality / City <span class="site-field__req">*</span></label>
             <input class="site-input<?= isset($errors['municipality_city']) ? ' site-input--invalid' : '' ?>" type="text"
                    id="su-city" name="municipality_city" maxlength="50" required
-                   value="<?= e($old['municipality_city']) ?>" autocomplete="address-level2" />
+                   value="<?= e($old['municipality_city']) ?>" placeholder="e.g. Cebu City" autocomplete="address-level2" />
             <div class="site-field__msg" data-msg-for="municipality_city"><?= e($errors['municipality_city'] ?? '') ?></div>
           </div>
 
@@ -479,7 +479,7 @@ render_public_header('Sign up', 'signup');
             <label for="su-province">Province <span class="site-field__req">*</span></label>
             <input class="site-input<?= isset($errors['province']) ? ' site-input--invalid' : '' ?>" type="text"
                    id="su-province" name="province" maxlength="50" required
-                   value="<?= e($old['province']) ?>" autocomplete="address-level1" />
+                   value="<?= e($old['province']) ?>" placeholder="e.g. Cebu" autocomplete="address-level1" />
             <div class="site-field__msg" data-msg-for="province"><?= e($errors['province'] ?? '') ?></div>
           </div>
 
@@ -518,7 +518,7 @@ render_public_header('Sign up', 'signup');
             <label for="su-password">Password <span class="site-field__req">*</span></label>
             <div class="site-input-wrap">
               <input class="site-input<?= isset($errors['password']) ? ' site-input--invalid' : '' ?>" type="password"
-                     id="su-password" name="password" required autocomplete="new-password" />
+                     id="su-password" name="password" required autocomplete="new-password" placeholder="Enter your password" />
               <button class="site-eye" type="button" data-toggle-password="#su-password" aria-pressed="false">Show</button>
             </div>
             <div class="site-strength" id="su-strength" data-strength="weak" hidden>
@@ -533,7 +533,7 @@ render_public_header('Sign up', 'signup');
             <label for="su-confirm">Re-enter Password <span class="site-field__req">*</span></label>
             <div class="site-input-wrap">
               <input class="site-input<?= isset($errors['confirm']) ? ' site-input--invalid' : '' ?>" type="password"
-                     id="su-confirm" name="confirm" required autocomplete="new-password" />
+                     id="su-confirm" name="confirm" required autocomplete="new-password" placeholder="Re-enter your password" />
               <button class="site-eye" type="button" data-toggle-password="#su-confirm" aria-pressed="false">Show</button>
             </div>
             <div class="site-field__msg" data-msg-for="confirm"><?= e($errors['confirm'] ?? '') ?></div>
