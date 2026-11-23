@@ -636,4 +636,4 @@ render_public_header('Sign up', 'signup');
 
 </section>
 
-<?php render_public_footer('', JS_URL . '/signup.js'); ?>
+<?php render_public_footer('', JS_URL . '/signup.js?v=2'); ?>

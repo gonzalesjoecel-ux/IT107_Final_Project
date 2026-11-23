@@ -8,11 +8,11 @@
   var form = document.getElementById('signup-form');
   if (!form) { return; }
 
-  var MIN_USERNAME = 8;
-  var MAX_USERNAME = 16;
-  var MIN_PASSWORD = 9;
+  var MIN_USERNAME = 6;
+  var MAX_USERNAME = 20;
+  var MIN_PASSWORD = 8;
   var MAX_PASSWORD = 64;
-  var NAME_MAX = 25;
+  var NAME_MAX = 50;
   var PASSWORD_MIN_MESSAGE = 'Password must be at least ' + MIN_PASSWORD + ' characters.';
 
   var birthdate = form.querySelector('[name="birthdate"]');
@@ -29,6 +29,9 @@
   var privacy = form.querySelector('[name="privacy"]');
   var strengthBox = document.getElementById('su-strength');
   var strengthLabel = document.getElementById('su-strength-label');
+  var questionSelects = [1, 2, 3].map(function (index) {
+    return form.querySelector('[name="question_' + index + '"]');
+  });
 
   var usernameStatus = { value: '', available: null };
   var usernameTimer = null;
@@ -51,6 +54,61 @@
     } else {
       el.classList.toggle('site-input--invalid', !!message);
     }
+  }
+
+  function questionValue(index) {
+    var select = questionSelects[index - 1];
+    return select ? String(select.value || '') : '';
+  }
+
+  function questionDuplicateError(index) {
+    var value = questionValue(index);
+    if (!value) { return ''; }
+
+    for (var earlier = 1; earlier < index; earlier++) {
+      if (questionValue(earlier) === value) {
+        return 'Please choose a different question.';
+      }
+    }
+    return '';
+  }
+
+  /*
+   * Keep the three question selects mutually exclusive. The first question
+   * that picked a value wins; a later duplicate is cleared so the form cannot
+   * be submitted with the same question twice.
+   */
+  function syncQuestionOptions() {
+    var values = questionSelects.map(function (select) {
+      return select ? String(select.value || '') : '';
+    });
+
+    for (var i = 0; i < values.length; i++) {
+      if (!values[i]) { continue; }
+
+      for (var j = 0; j < i; j++) {
+        if (values[j] !== values[i]) { continue; }
+
+        values[i] = '';
+        if (questionSelects[i]) {
+          questionSelects[i].value = '';
+          questionSelects[i].setAttribute('data-question-conflict', '1');
+        }
+        setMsg('question_' + (i + 1), 'Please choose a different question.');
+        break;
+      }
+    }
+
+    questionSelects.forEach(function (select, index) {
+      if (!select) { return; }
+
+      Array.prototype.forEach.call(select.options, function (option) {
+        var value = option.value;
+        option.disabled = !!value && values.some(function (used, usedIndex) {
+          return usedIndex !== index && used === value;
+        });
+      });
+    });
   }
 
   function isTitleWord(word) {
@@ -272,6 +330,17 @@
           ? 'Please select a valid account type.'
           : '';
       case 'organization_name': return organizationError(value, accountType.value === 'Organization');
+      case 'question_1':
+      case 'question_2':
+      case 'question_3': {
+        var index = Number(name.slice(-1));
+        var select = questionSelects[index - 1];
+        if (select && select.getAttribute('data-question-conflict') === '1') {
+          return 'Please choose a different question.';
+        }
+        if (!value) { return 'Please choose a security question.'; }
+        return questionDuplicateError(index);
+      }
       case 'answer_1':
       case 'answer_2':
       case 'answer_3': return answerError(value);
@@ -295,6 +364,18 @@
     el.addEventListener('blur', function () { setMsg(name, validateField(name)); });
     el.addEventListener('input', function () { setMsg(name, ''); });
   });
+
+  questionSelects.forEach(function (select, index) {
+    if (!select) { return; }
+    select.addEventListener('change', function () {
+      select.removeAttribute('data-question-conflict');
+      setMsg('question_' + (index + 1), '');
+      syncQuestionOptions();
+    });
+  });
+
+  /* Re-apply exclusions on load so old values after a failed submit survive. */
+  syncQuestionOptions();
 
   if (birthdate) {
     birthdate.addEventListener('change', refreshAge);
@@ -421,6 +502,11 @@
       confirmMessage = 'Passwords do not match.';
     }
     check('confirm', confirmMessage);
+
+    syncQuestionOptions();
+    checkField('question_1');
+    checkField('question_2');
+    checkField('question_3');
 
     checkField('answer_1');
     checkField('answer_2');
