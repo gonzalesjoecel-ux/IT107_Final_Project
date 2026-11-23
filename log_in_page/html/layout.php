@@ -460,6 +460,31 @@ function render_public_footer(string $extraJs = '', ?string $scriptUrl = null): 
     try { slot = new URL(img.src).searchParams.get('slot') || 'default'; } catch (err) {}
     img.src = base + '?slot=' + encodeURIComponent(slot) + '&t=' + Date.now();
   });
+
+  /* ---- Smooth transition between the public auth pages ---- */
+  (function () {
+    var auth = document.querySelector('.auth');
+    if (!auth || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { return; }
+
+    var authPages = ['login.php', 'signup.php', 'forgot.php', 'verify_otp.php', 'change_password.php'];
+
+    document.addEventListener('click', function (ev) {
+      if (ev.defaultPrevented || ev.button !== 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) { return; }
+
+      var a = ev.target.closest('a[href]');
+      if (!a || a.target || a.hasAttribute('download') || a.dataset.noTransition !== undefined) { return; }
+
+      var to;
+      try { to = new URL(a.href, window.location.href); } catch (err) { return; }
+      if (to.origin !== window.location.origin) { return; }
+      if (!authPages.some(function (p) { return to.pathname.indexOf('/' + p) !== -1; })) { return; }
+      if (to.pathname === window.location.pathname && to.search === window.location.search) { return; }
+
+      ev.preventDefault();
+      auth.classList.add('is-leaving');
+      window.setTimeout(function () { window.location.assign(to.href); }, 190);
+    });
+  })();
 })();
 
 <?= site_background_js() ?>
