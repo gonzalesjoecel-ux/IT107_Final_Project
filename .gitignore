@@ -1,0 +1,19 @@
+# Real credentials and local secrets — never commit these
+mail_config.php
+config.php
+db/config.php
+*.env
+
+# Editor / local history
+.history/
+*.bak
+*.old
+*~
+
+# Local mail outbox (OTP messages)
+mail_outbox/
+*.eml
+
+# Temporary files
+*.tmp
+*.log

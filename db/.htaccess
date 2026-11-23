@@ -1,0 +1,2 @@
+# Block direct browser access to the database folder (db.php, SQL files).
+Require all denied
