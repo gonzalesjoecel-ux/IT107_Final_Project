@@ -4,6 +4,9 @@ config.php
 db/config.php
 *.env
 
+# Local-only security testing script — keep out of the repository
+lab_test.php
+
 # Editor / local history
 .history/
 *.bak
